@@ -1,0 +1,93 @@
+/* 布局相关样式 */
+.container {
+    display: flex;
+    min-height: 100vh;
+    max-width: 1440px;
+    margin: 0 auto;
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+/* 侧边栏样式 */
+.sidebar {
+    width: 240px;
+    background-color: #f8f8fa;
+    border-right: 1px solid #e5e5e5;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 25px 20px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.sidebar-header h1 {
+    font-size: 20px;
+    margin: 0;
+    color: #1d1d1f;
+}
+
+/* 内容区域样式 */
+.content {
+    flex: 1;
+    padding: 30px;
+    margin-left: 240px;
+    min-height: 100vh;
+    background-color: #ffffff;
+}
+
+.function-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 功能列表样式 */
+.function-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.function-item {
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 3px solid transparent;
+}
+
+.function-item:hover {
+    background-color: #f0f0f2;
+}
+
+.function-item.active {
+    background-color: #f0f0f2;
+    border-left-color: #0071e3;
+    font-weight: 500;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .function-content {
+        padding: 15px;
+    }
+} 

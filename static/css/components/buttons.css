@@ -1,0 +1,39 @@
+/* 按钮基础样式 */
+button {
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0077ed;
+}
+
+button.secondary {
+    background-color: #6e6e73;
+}
+
+button.secondary:hover {
+    background-color: #86868b;
+}
+
+.primary-btn {
+    background-color: #0071e3;
+    color: white;
+}
+
+.secondary-btn {
+    background-color: #6e6e73;
+    color: white;
+}
+
+.remove-btn {
+    background-color: #ff3b30;
+    padding: 4px 8px;
+    font-size: 12px;
+} 

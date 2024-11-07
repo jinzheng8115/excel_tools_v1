@@ -1,0 +1,10 @@
+/* 文件操作模块特定样式 */
+.function-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 其他样式保持不变 */ 

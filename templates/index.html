@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel 工具集</title>
+    <!-- 基础样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <!-- 组件样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/forms.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/layout.css') }}">
+    <!-- 模块样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modules/vlookup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modules/concatenate.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modules/pivot.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modules/format.css') }}">
+    <!-- 使用本地 SheetJS 库 -->
+    <script src="{{ url_for('static', filename='js/lib/xlsx.full.min.js') }}"></script>
+    <!-- 导入模块样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/import.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>Excel 工具集</h1>
+            </div>
+            <ul class="function-list">
+                <li class="function-item" onclick="showModule('vlookup', event)">
+                    VLOOKUP 查找
+                    <span class="status-tag completed">已完成</span>
+                </li>
+                <li class="function-item" onclick="showModule('concatenate', event)">
+                    CONCATENATE 合并
+                    <span class="status-tag completed">已完成</span>
+                </li>
+                <li class="function-item" onclick="showModule('pivot', event)">
+                    数据透视
+                    <span class="status-tag completed">已完成</span>
+                </li>
+                <li class="function-item" onclick="showModule('format', event)">
+                    文件操作
+                    <span class="status-tag completed">已完成</span>
+                </li>
+                <li class="function-item" onclick="showModule('import', event)">
+                    文件导入
+                    <span class="status-tag completed">已完成</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content">
+            {% include 'modules/vlookup.html' %}
+            {% include 'modules/concatenate.html' %}
+            {% include 'modules/pivot.html' %}
+            {% include 'modules/format.html' %}
+            <!-- 导入模块 -->
+            {% include 'modules/import.html' %}
+        </div>
+    </div>
+
+    <!-- JavaScript 文件引入 -->
+    <script>
+        function showModule(moduleId, event) {
+            // 更新侧边栏选中状态
+            document.querySelectorAll('.function-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (event && event.target) {
+                const functionItem = event.target.closest('.function-item');
+                if (functionItem) {
+                    functionItem.classList.add('active');
+                }
+            }
+
+            // 显示对应的模块
+            document.querySelectorAll('.module').forEach(module => {
+                module.classList.remove('active');
+            });
+            document.getElementById(moduleId).classList.add('active');
+
+            // 重置当前模块的所有表单
+            resetModuleForm(moduleId);
+        }
+
+        function resetModuleForm(moduleId) {
+            const module = document.getElementById(moduleId);
+            
+            // 重置所有文件输入
+            module.querySelectorAll('input[type="file"]').forEach(input => {
+                input.value = '';
+            });
+            
+            // 重置所有选择框
+            module.querySelectorAll('select').forEach(select => {
+                select.innerHTML = '<option value="">请选择</option>';
+                select.value = '';
+            });
+            
+            // 重置所有配置区域的显示
+            module.querySelectorAll('[id$="Config"]').forEach(config => {
+                config.style.display = 'none';
+            });
+            
+            // 重置所有列表
+            module.querySelectorAll('.column-list').forEach(list => {
+                list.innerHTML = '';
+            });
+            
+            // 重置所有状态提示
+            module.querySelectorAll('[id$="Status"]').forEach(status => {
+                status.textContent = '等待上传文件...';
+                status.style.color = '#1d1d1f';
+            });
+            
+            // 禁用下载按钮
+            module.querySelectorAll('button[id$="DownloadBtn"]').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            // 重置单选按钮到默认状态
+            module.querySelectorAll('input[type="radio"]').forEach(radio => {
+                if (radio.checked) {
+                    const event = new Event('change');
+                    radio.dispatchEvent(event);
+                }
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            showModule('vlookup');
+        });
+    </script>
+
+    <!-- 引入功能模块的JavaScript文件 -->
+    <script src="{{ url_for('static', filename='js/vlookup.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/concatenate.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pivot.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/format.js') }}"></script>
+    <!-- 导入模块的JavaScript文件 -->
+    <script src="{{ url_for('static', filename='js/import.js') }}"></script>
+</body>
+</html> 

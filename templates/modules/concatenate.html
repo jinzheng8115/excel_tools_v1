@@ -1,0 +1,202 @@
+<div id="concatenate" class="module">
+    <div class="function-content">
+        <div class="module-header">
+            <h2>CONCATENATE 文本合并</h2>
+        </div>
+        
+        <!-- 文件上传部分 -->
+        <div class="form-group">
+            <label class="form-label">选择Excel文件：</label>
+            <input type="file" id="concatenateFile" accept=".xlsx,.xls" onchange="handleConcatenateFileUpload()" title="选择要处理的Excel文件" placeholder="选择Excel文件" />
+            <div id="concatenateFileConfig" style="display: none;">
+                <label class="form-label">选择工作表：</label>
+                <select id="concatenateSheet" onchange="handleConcatenateSheetChange()">
+                    <option value="">请选择工作表</option>
+                </select>
+
+                <!-- 合并列选择和分隔符设置 -->
+                <div class="merge-columns-section">
+                    <label class="form-label">选择要合并的列和分隔符：</label>
+                    <div id="mergeColumns" class="multi-select">
+                        <div class="column-list">
+                            <!-- 列选择和分隔符将在这里动态添加 -->
+                        </div>
+                        <button type="button" onclick="addMergeColumn()" class="add-column-btn">添加列</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="form-group">
+            <button onclick="processConcatenate()">开始处理</button>
+            <button class="secondary" id="concatenateDownloadBtn" onclick="downloadConcatenateResult()" disabled>下载结果</button>
+            <div id="concatenateStatus" style="margin-top: 10px;">等待上传文件...</div>
+        </div>
+
+        <!-- 使用说明部分 -->
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ol>
+                <li>
+                    <strong>基本步骤</strong>
+                    <ul>
+                        <li>选择Excel文件和工作表</li>
+                        <li>点击"添加列"选择要合并的列</li>
+                        <li>为每列配置分隔符选项</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>分隔符设置</strong>
+                    <ul>
+                        <li>勾选"使用空格"：自动使用空格作为分隔符</li>
+                        <li>不勾选时可以输入自定义分隔符</li>
+                        <li>勾选"分隔符在前"：分隔符将添加在该列值的前面</li>
+                        <li>不勾选时分隔符将添加在该列值的后面</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="example">
+                <p><strong>示例1：基本合并</strong></p>
+                <p>原始数据：</p>
+                <pre>
+A列      B列      C列
+张       三       先生
+李       四       女士</pre>
+
+                <p>设置：</p>
+                <ul>
+                    <li>选择A列，使用空格</li>
+                    <li>选择B列，使用空格</li>
+                    <li>选择C列，无分隔符</li>
+                </ul>
+
+                <p>结果：</p>
+                <pre>
+A列      B列      C列      合并结果
+张       三       先生     张 三先生
+李       四       女士     李 四女士</pre>
+
+                <p><strong>示例2：自定义分隔符</strong></p>
+                <p>设置：</p>
+                <ul>
+                    <li>选择A列，自定义分隔符"-"</li>
+                    <li>选择B列，使用空格</li>
+                    <li>选择C列，无分隔符</li>
+                </ul>
+
+                <p>结果：</p>
+                <pre>
+A列      B列      C列      合并结果
+张       三       先生     张- 三先生
+李       四       女士     李- 四女士</pre>
+            </div>
+
+            <div class="note">
+                <strong>注意事项</strong>
+                <ul>
+                    <li>空值会被自动忽略</li>
+                    <li>结果将作为新列添加到最后</li>
+                    <li>每列可以独立设置分隔符</li>
+                    <li>分隔符可以选择在值的前面或后面</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/concatenate.js') }}"></script>
+
+<style>
+    .separator-options {
+        margin: 10px 0;
+        display: flex;
+        gap: 20px;
+    }
+
+    .separator-options label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+    }
+
+    #separator {
+        margin-top: 10px;
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #d2d2d7;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .column-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        background-color: #f5f5f7;
+        padding: 8px;
+        border-radius: 6px;
+    }
+
+    .column-item select {
+        flex: 2;
+    }
+
+    .separator-input {
+        flex: 1;
+        max-width: 100px;
+        padding: 8px;
+        border: 1px solid #d2d2d7;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .remove-column-btn {
+        flex: 0 0 auto;
+    }
+
+    .separator-config {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .separator-type {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .separator-type label {
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    .separator-input {
+        width: 100px;
+    }
+
+    .separator-position {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+</style>
+
+<script>
+function handleSeparatorTypeChange(checkbox) {
+    const separatorInput = checkbox.closest('.separator-type').querySelector('.separator-input');
+    if (checkbox.checked) {
+        separatorInput.value = ' ';
+        separatorInput.disabled = true;
+    } else {
+        separatorInput.value = '';
+        separatorInput.disabled = false;
+    }
+}
+</script>

@@ -1,0 +1,111 @@
+/* VLOOKUP 模块特定样式 */
+.vlookup-options {
+    background-color: #f5f5f7;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.match-columns {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.match-column {
+    flex: 1;
+}
+
+.match-type-selector {
+    margin: 15px 0;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.return-columns-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f5f5f7;
+    border-radius: 8px;
+}
+
+/* 列选择器样式 */
+.column-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    background-color: white;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.column-item select {
+    flex: 1;
+}
+
+/* 状态提示样式 */
+#status {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    background-color: #f5f5f7;
+}
+
+/* 示例代码样式 */
+.example pre {
+    background-color: #f5f5f7;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: Menlo, Monaco, 'Courier New', monospace;
+    font-size: 13px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+/* 状态提示区域样式 */
+.status-container {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f5f5f7;
+    border-radius: 8px;
+}
+
+.status-message {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.match-stats {
+    font-size: 13px;
+    color: #666;
+}
+
+/* 按钮区域样式 */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.action-buttons button {
+    min-width: 120px;
+}
+
+/* 状态颜色 */
+.status-success {
+    color: #34c759;
+}
+
+.status-error {
+    color: #ff3b30;
+}
+
+.status-processing {
+    color: #007aff;
+} 

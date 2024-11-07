@@ -1,0 +1,135 @@
+<div id="format" class="module">
+    <div class="function-content">
+        <div class="module-header">
+            <h2>文件操作</h2>
+        </div>
+        
+        <!-- 文件拆分 -->
+        <div class="function-section">
+            <h3>文件拆分</h3>
+            <div class="form-group">
+                <label for="split-file" class="form-label">选择Excel文件：</label>
+                <input type="file" id="split-file" accept=".xlsx,.xls" title="选择要拆分的Excel文件">
+                
+                <!-- 工作表选择区域 -->
+                <div id="sheet-selection" class="sheet-selection">
+                    <div class="sheet-list-container">
+                        <label class="form-label">选择要拆分的工作表：</label>
+                        <div class="sheet-list-controls">
+                            <button type="button" onclick="selectAllSheets()" class="secondary-btn">全选</button>
+                            <button type="button" onclick="deselectAllSheets()" class="secondary-btn">取消全选</button>
+                        </div>
+                        <div class="sheet-list">
+                            <!-- 工作表列表将通过JavaScript动态填充 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 操作按钮和状态提示区域 -->
+                <div class="form-group">
+                    <div class="action-buttons">
+                        <button onclick="splitFile()" class="primary-btn">开始拆分</button>
+                    </div>
+                    
+                    <!-- 添加状态提示区域 -->
+                    <div class="status-container">
+                        <div id="formatStatus" class="status-message">等待上传文件...</div>
+                        <div id="process-stats" class="process-stats"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文件合并 -->
+        <div class="function-section">
+            <h3>文件合并</h3>
+            <div class="form-group">
+                <label for="merge-files" class="form-label">选择多个Excel文件：</label>
+                <div class="file-upload-area" id="merge-upload-area">
+                    <input type="file" id="merge-files" multiple accept=".xlsx,.xls" title="选择要合并的Excel文件">
+                    <div class="upload-tip">点击或拖放文件到此处</div>
+                </div>
+                
+                <!-- 添加文件列表预览 -->
+                <div id="selected-files-list" class="selected-files-list">
+                    <!-- 文件列表将通过JavaScript动态填充 -->
+                </div>
+                
+                <div class="merge-options">
+                    <div class="merge-mode-option">
+                        <label class="form-label">合并模式：</label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="merge-mode" value="sheets" checked>
+                                保持在不同工作表（每个文件一个工作表）
+                            </label>
+                            <label>
+                                <input type="radio" name="merge-mode" value="single">
+                                合并到单个工作表（所有数据合并到一起）
+                            </label>
+                            <label>
+                                <input type="radio" name="merge-mode" value="by-name">
+                                按工作表名合并（相同名字的工作表合并到一起）
+                            </label>
+                        </div>
+                    </div>
+                    <label>
+                        <input type="checkbox" id="merge-all-sheets" checked>
+                        合并所有工作表
+                    </label>
+                    <div id="source-column-option">
+                        <label>
+                            <input type="checkbox" id="add-source-column" checked>
+                            添加来源信息列
+                        </label>
+                    </div>
+                    <div class="merge-name-option">
+                        <label for="merged-filename" class="form-label">合并后的文件名：</label>
+                        <input type="text" id="merged-filename" 
+                               placeholder="请输入文件名（不含扩展名）" 
+                               title="合并后的文件名"
+                               value="合并文件">
+                    </div>
+                </div>
+                <button onclick="mergeFiles()" class="primary-btn">开始合并</button>
+            </div>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <div class="note">
+                <strong>文件拆分</strong>
+                <p>将Excel文件按工作表拆分为多个独立的Excel文件。</p>
+                <ul>
+                    <li>支持 .xlsx 和 .xls 格式的Excel文件</li>
+                    <li>可以选择要拆分的具体工作表</li>
+                    <li>拆分后的文件将保持原工作表的格式和内容</li>
+                    <li>文件名将按"原文件名_工作表名"命名</li>
+                </ul>
+            </div>
+            <div class="note">
+                <strong>文件合并</strong>
+                <p>提供三种合并模式：</p>
+                <ul>
+                    <li><strong>保持在不同工作表：</strong>每个文件作为单独的工作表保存在合并后的文件中</li>
+                    <li><strong>合并到单个工作表：</strong>所有文件的数据合并到一个工作表中（要求列结构相同）</li>
+                    <li><strong>按工作表名合并：</strong>将不同文件中相同名称的工作表合并到一起（要求列结构相同）</li>
+                </ul>
+                <p>其他功能：</p>
+                <ul>
+                    <li>可以选择是否合并所有工作表</li>
+                    <li>可以添加来源信息列（显示数据来自哪个文件和工作表）</li>
+                    <li>支持拖放文件上传</li>
+                    <li>可以自定义合并后的文件名</li>
+                </ul>
+                <p>注意事项：</p>
+                <ul>
+                    <li>合并到单个工作表或按工作表名合并时，要求列结构相同</li>
+                    <li>如果选择添加来源列，会自动添加"来源文件"和"来源工作表"两列</li>
+                    <li>建议在合并前检查各文件的列结构是否一致</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,167 @@
+<div id="import" class="module">
+    <h2>数据导入</h2>
+    
+    <!-- 数据源选择 -->
+    <div class="function-section">
+        <h3>选择数据源</h3>
+        <div class="form-group">
+            <div class="source-selector">
+                <label>
+                    <input type="radio" name="import-type" value="files" checked>
+                    选择文件
+                </label>
+                <label>
+                    <input type="radio" name="import-type" value="folder">
+                    选择文件夹
+                </label>
+            </div>
+            
+            <!-- 文件上传区域 -->
+            <div class="file-upload-area" id="import-upload-area">
+                <!-- 文件选择输入框 -->
+                <label for="import-file" class="file-input-label">
+                    <input type="file" 
+                           id="import-file" 
+                           name="file"
+                           accept=".txt,.csv" 
+                           multiple
+                           title="选择要导入的TXT或CSV文件"
+                           aria-label="选择要导入的TXT或CSV文件">
+                </label>
+                <!-- 文件夹选择输入框 -->
+                <label for="import-folder" class="file-input-label">
+                    <input type="file" 
+                           id="import-folder" 
+                           name="file"
+                           webkitdirectory 
+                           directory 
+                           style="display: none;"
+                           title="选择要导入的文件夹"
+                           aria-label="选择要导入的文件夹">
+                </label>
+                <div class="upload-tip">点击或拖放 TXT/CSV 文件到此处</div>
+            </div>
+
+            <!-- 文件表显示区域 -->
+            <div id="file-info" class="file-info" style="display: none;">
+                <h4>已选择的文件</h4>
+                <div id="file-list" class="file-list">
+                    <!-- 文件列表将通过JavaScript动态填充 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导入选项 -->
+    <div class="function-section" id="import-options" style="display: none;">
+        <h3>导入选项</h3>
+        <div class="form-group">
+            <!-- 自动分列选项 -->
+            <div id="delimiter-option" class="delimiter-option">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="auto-split" checked>
+                    <span>自动检测分隔符并分列</span>
+                </label>
+                <div id="manual-delimiter" class="manual-delimiter" style="display: none;">
+                    <div class="delimiter-row">
+                        <label class="form-label">分隔符：</label>
+                        <input type="text" 
+                               id="custom-delimiter" 
+                               class="custom-delimiter"
+                               placeholder="输入分隔符"
+                               maxlength="1"
+                               style="width: 30px; padding: 2px 4px; text-align: center;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据范围选项 -->
+            <div class="range-options">
+                <label class="form-label">数据范围：</label>
+                <div class="range-inputs">
+                    <div>
+                        <label>起始行：</label>
+                        <input type="number" id="start-row" value="1" min="1">
+                    </div>
+                    <div>
+                        <label>表头行：</label>
+                        <input type="number" id="header-row" value="1" min="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据预览 -->
+    <div class="function-section" id="data-preview" style="display: none;">
+        <h3>数据预览</h3>
+        <div class="preview-container">
+            <table class="preview-table">
+                <thead>
+                    <!-- 表将通过JavaScript动态填充 -->
+                </thead>
+                <tbody>
+                    <!-- 预览数据将通过JavaScript动态填充 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 列设置 -->
+        <div class="column-settings">
+            <h4>列设置</h4>
+            <div class="columns-container">
+                <!-- 列设置将通过JavaScript动态填充 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 导入按钮 -->
+    <div class="function-section">
+        <div class="form-group">
+            <button onclick="handlePreviewData()" class="secondary-btn" id="preview-btn" disabled>预览数据</button>
+            <button onclick="handleImportData()" class="primary-btn" id="import-btn" disabled>开始导入</button>
+            <button onclick="handleDownloadResult()" class="primary-btn" id="download-btn" style="display: none;">下载结果</button>
+        </div>
+    </div>
+
+    <!-- 使用说明 -->
+    <div class="instructions">
+        <h3>使用说明</h3>
+        <div class="note">
+            <strong>支持的文件格式</strong>
+            <ul>
+                <li>文本文件 (.txt)</li>
+                <li>CSV文件 (.csv)</li>
+            </ul>
+        </div>
+        <div class="note">
+            <strong>导入选项</strong>
+            <ul>
+                <li>支持单个文件或文件夹导入</li>
+                <li>自动检测文件编码（支持 UTF-8、GBK、GB2312 等）</li>
+                <li>可选择自动检测分隔符或手动设置</li>
+                <li>支持设置数据的起始行和表头行</li>
+                <li>支持带引号的字段（如："字段1,字段2"）</li>
+                <li>支持批量导入多个文件</li>
+            </ul>
+        </div>
+        <div class="note">
+            <strong>数据预览</strong>
+            <ul>
+                <li>导入前可以预览数据内容</li>
+                <li>显示前5行数据用于确认格式</li>
+                <li>正确显示中文字符</li>
+                <li>自动处理特殊字符</li>
+            </ul>
+        </div>
+        <div class="note">
+            <strong>导出结果</strong>
+            <ul>
+                <li>自动合并多个文件的数据</li>
+                <li>导出为标准 Excel 格式</li>
+                <li>自动调整列宽</li>
+                <li>保持原始数据格式</li>
+            </ul>
+        </div>
+    </div>
+</div> 

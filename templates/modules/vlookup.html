@@ -1,0 +1,279 @@
+<div id="vlookup" class="module active">
+    <div class="function-content">
+        <div class="module-header">
+            <h2>VLOOKUP 查找</h2>
+        </div>
+        
+        <!-- 主数据表部分 -->
+        <div class="form-group">
+            <label class="form-label">主数据表：</label>
+            <input type="file" id="mainFile" accept=".xlsx,.xls" onchange="handleMainFileUpload()" title="选择主数据表Excel文件" placeholder="选择Excel文件" />
+            <div id="mainFileConfig" style="display: none;">
+                <label class="form-label">选择工作表：</label>
+                <select id="mainSheet" onchange="handleMainSheetChange()">
+                    <option value="">请选择工作表</option>
+                </select>
+                
+                <div class="match-type-selector">
+                    <label class="form-label">匹配方式：</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="mainMatchType" value="single" checked onchange="switchMainMatchType('single')">
+                            单列匹配
+                        </label>
+                        <label>
+                            <input type="radio" name="mainMatchType" value="multiple" onchange="switchMainMatchType('multiple')">
+                            多列匹配
+                        </label>
+                    </div>
+                    <!-- 匹配类型提示将在这里动态添加 -->
+                </div>
+
+                <!-- 单列匹配界面 -->
+                <div id="mainSingleMatch">
+                    <label class="form-label">查找列：</label>
+                    <select id="mainLookupValue">
+                        <option value="">请先选择工作表</option>
+                    </select>
+                </div>
+
+                <!-- 多列匹配界面 -->
+                <div id="mainMultiMatch" style="display: none;">
+                    <div id="mainLookupColumns" class="multi-select">
+                        <div class="column-list">
+                            <!-- 列选择将在这里动态添加 -->
+                        </div>
+                        <button type="button" onclick="addMainColumn()" class="add-column-btn">添加匹配列</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 查找数据表部分 -->
+        <div class="form-group">
+            <label class="form-label">查找数据表：</label>
+            <input type="file" id="lookupFile" accept=".xlsx,.xls" onchange="handleLookupFileUpload()" title="选择查找数据表Excel文件" placeholder="选择Excel文件" />
+            <div id="lookupFileConfig" style="display: none;">
+                <label class="form-label">选择工作表：</label>
+                <select id="lookupSheet" onchange="handleLookupSheetChange()">
+                    <option value="">请选择工作表</option>
+                </select>
+
+                <!-- 修改匹配类型选择器 -->
+                <div class="match-type-selector">
+                    <label class="form-label">匹配方式：</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="lookupMatchType" value="single" checked disabled>
+                            单列匹配
+                        </label>
+                        <label>
+                            <input type="radio" name="lookupMatchType" value="multiple" disabled>
+                            多列匹配
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 单列匹配界面 -->
+                <div id="lookupSingleMatch">
+                    <label class="form-label">匹配列：</label>
+                    <select id="lookupMatchValue">
+                        <option value="">请选择列</option>
+                    </select>
+                </div>
+
+                <!-- 多列匹配界面 -->
+                <div id="lookupMultiMatch" style="display: none;">
+                    <div id="lookupMatchColumns" class="multi-select">
+                        <div class="column-list">
+                            <!-- 列选择将在这里动态添加 -->
+                        </div>
+                        <button type="button" onclick="addLookupMatchColumn()" class="add-column-btn">添加匹配列</button>
+                    </div>
+                </div>
+
+                <!-- 返回列部分 -->
+                <div class="return-columns-section">
+                    <div class="match-type-selector">
+                        <label class="form-label">返回列：</label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="returnType" value="single" checked onchange="switchReturnType('single')">
+                                单列返回
+                            </label>
+                            <label>
+                                <input type="radio" name="returnType" value="multiple" onchange="switchReturnType('multiple')">
+                                多列返回
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 单列返回界面 -->
+                    <div id="returnSingleColumn">
+                        <select id="lookupReturnValue">
+                            <option value="">请选择返回列</option>
+                        </select>
+                    </div>
+
+                    <!-- 多列返回界面 -->
+                    <div id="returnMultiColumns" style="display: none;">
+                        <div id="returnColumns" class="multi-select">
+                            <div class="column-list">
+                                <!-- 列选择将在这里动态添加 -->
+                            </div>
+                            <button type="button" onclick="addReturnColumn()" class="add-column-btn">添加返回列</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮和状态提示区域 -->
+        <div class="form-group">
+            <div class="action-buttons">
+                <button onclick="processFiles()" class="primary-btn">开始处理</button>
+                <button class="secondary-btn" id="downloadBtn" onclick="downloadResult()" disabled>下载结果</button>
+            </div>
+            
+            <!-- 添加状态提示区域 -->
+            <div class="status-container">
+                <div id="status" class="status-message">等待上传文件...</div>
+                <div id="match-stats" class="match-stats"></div>
+            </div>
+        </div>
+
+        <!-- 使用说明部分 -->
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ol>
+                <li>
+                    <strong>主数据表</strong>
+                    <ul>
+                        <li>支持 .xlsx 和 .xls 格式的 Excel 文件</li>
+                        <li>选择工作表后，可以选择匹配方式：
+                            <ul>
+                                <li>单列匹配：使用一列作为匹配条件</li>
+                                <li>多列匹配：使用多列组合作为匹配条件</li>
+                            </ul>
+                        </li>
+                        <li>选择匹配列时，使用字母表示（A、B、C...）</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>查找数据表</strong>
+                    <ul>
+                        <li>可以使用主数据表的其他工作表，或上传新的 Excel 文件</li>
+                        <li>匹配方式会自动跟随主表设置：
+                            <ul>
+                                <li>主表选择单列时，查找表也使用单列匹配</li>
+                                <li>主表选择多列时，查找表也使用多列匹配</li>
+                            </ul>
+                        </li>
+                        <li>返回列可以选择单列或多列，不受匹配方式限制</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>数据处理说明</strong>
+                    <ul>
+                        <li>数字处理：
+                            <ul>
+                                <li>整数会去除小数点</li>
+                                <li>小数保持原有精度</li>
+                                <li>科学计数法会转换为普通数字</li>
+                            </ul>
+                        </li>
+                        <li>文本处理：
+                            <ul>
+                                <li>自动去除首尾空格</li>
+                                <li>多个空格会合并为一个</li>
+                                <li>空值会显示为空白</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="example">
+                <p><strong>示例一：单列匹配</strong></p>
+                <p>主表数据：</p>
+                <pre>
+工号    姓名
+001     张三
+002     李四
+003     王五</pre>
+
+                <p>查找表数据：</p>
+                <pre>
+工号    部门    职位
+001     市场部  经理
+002     研发部  工程师
+003     销售部  主管</pre>
+
+                <p>匹配设置：</p>
+                <ul>
+                    <li>主表：选择工号列（A列）</li>
+                    <li>查找表：匹配工号列（A列）</li>
+                    <li>返回：选择部门和职位列（B、C列）</li>
+                </ul>
+
+                <p>匹配结果：</p>
+                <pre>
+工号    姓名    部门    职位
+001     张三    市场部  经理
+002     李四    研发部  工程师
+003     王五    销售部  主管</pre>
+
+                <p><strong>示例二：多列匹配</strong></p>
+                <p>主表数据：</p>
+                <pre>
+部门    职级    姓名
+市场部  P3      张三
+研发部  P4      李四
+销售部  P3      王五</pre>
+
+                <p>查找表数据：</p>
+                <pre>
+部门    职级    基本工资    绩效工资
+市场部  P3      8000        3000
+研发部  P4      12000       5000
+销售部  P3      8000        4000</pre>
+
+                <p>匹配设置：</p>
+                <ul>
+                    <li>主表：选择部门和职级列（A、B列）</li>
+                    <li>查找表：匹配部门和职级列（A、B列）</li>
+                    <li>返回：选择基本工资和绩效工资列（C、D列）</li>
+                </ul>
+            </div>
+
+            <div class="note">
+                <strong>注意事项</strong>
+                <ul>
+                    <li>匹配规则：
+                        <ul>
+                            <li>匹配时区分大小写</li>
+                            <li>数字和文本不会自动转换</li>
+                            <li>未匹配的数据会显示为空</li>
+                        </ul>
+                    </li>
+                    <li>文件限制：
+                        <ul>
+                            <li>支持 .xlsx 和 .xls 格式</li>
+                            <li>建议文件大小不超过 10MB</li>
+                            <li>建议数据行数不超过 100,000 行</li>
+                        </ul>
+                    </li>
+                    <li>处理结果：
+                        <ul>
+                            <li>会显示匹配成功率</li>
+                            <li>对于未匹配的数据会提供示例</li>
+                            <li>结果文件保持原有格式</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/vlookup.js') }}"></script> 

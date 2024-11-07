@@ -1,0 +1,544 @@
+<div id="pivot" class="module">
+    <div class="function-content">
+        <div class="module-header">
+            <h2>数据透视表</h2>
+        </div>
+        
+        <!-- 文件上传部分 -->
+        <div class="form-group">
+            <label class="form-label">选择Excel文件：</label>
+            <input type="file" id="pivotFile" accept=".xlsx,.xls" onchange="handlePivotFileUpload()" title="选择要分析的Excel文件" placeholder="选择Excel文件" />
+            <div id="pivotFileConfig" style="display: none;">
+                <label class="form-label">选择工作表：</label>
+                <select id="pivotSheet" onchange="handlePivotSheetChange()">
+                    <option value="">请选择工作表</option>
+                </select>
+
+                <!-- 透视表配置 -->
+                <div class="pivot-config">
+                    <!-- 行标签配置 -->
+                    <div class="config-section">
+                        <label class="form-label">行标签（必选）：</label>
+                        <div id="rowLabels" class="multi-select">
+                            <div class="column-list">
+                                <!-- 列选择将在这里动态添加 -->
+                            </div>
+                            <button type="button" onclick="addRowLabel()" class="add-column-btn">添加行标签</button>
+                        </div>
+                    </div>
+
+                    <!-- 列标签配置 -->
+                    <div class="config-section">
+                        <label class="form-label">列标签（可选）：</label>
+                        <div id="colLabels" class="multi-select">
+                            <div class="column-list">
+                                <!-- 列选择将在这里动态添加 -->
+                            </div>
+                            <button type="button" onclick="addColLabel()" class="add-column-btn">添加列标签</button>
+                        </div>
+                    </div>
+
+                    <!-- 值配置 -->
+                    <div class="config-section">
+                        <label class="form-label">值（必选）：</label>
+                        <div id="valueFields" class="multi-select">
+                            <div class="column-list">
+                                <!-- 值配置将在这里动态添加 -->
+                            </div>
+                            <button type="button" onclick="addValueField()" class="add-column-btn">添加值</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="form-group">
+            <button onclick="processPivot()">开始处理</button>
+            <button class="secondary" id="pivotDownloadBtn" onclick="downloadPivotResult()" disabled>下载结果</button>
+            <div id="pivotStatus" style="margin-top: 10px;">等待上传文件...</div>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ol>
+                <li>
+                    <strong>基本步骤</strong>
+                    <ul>
+                        <li>选择Excel文件（支持.xlsx和.xls格式）</li>
+                        <li>选择要分析的工作表</li>
+                        <li>配置行标签（必选，可多选）</li>
+                        <li>配置列标签（可选，可多选）</li>
+                        <li>配置值字段（必选，可多选）</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>数据要求</strong>
+                    <ul>
+                        <li>第一行必须是列标题</li>
+                        <li>数据从第二行开始</li>
+                        <li>避免空行和空列</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>汇总方式说明</strong>
+                    <ul>
+                        <li>数值类型字段支持：
+                            <ul>
+                                <li>求和：对数值进行求和</li>
+                                <li>计数：统计数量</li>
+                                <li>平均值：计算平均值</li>
+                                <li>最大值：选择最大值</li>
+                                <li>最小值：选择最小值</li>
+                            </ul>
+                        </li>
+                        <li>文本类型字段：
+                            <ul>
+                                <li>仅支持计数操作</li>
+                                <li>选择其他操作时会自动提示</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>结果说明</strong>
+                    <ul>
+                        <li>自动合并相同值的单元格</li>
+                        <li>自动添加总计行</li>
+                        <li>数值格式化：
+                            <ul>
+                                <li>整数：添加千分位分隔符</li>
+                                <li>小数：保留两位小数</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="example">
+                <p><strong>示例：销售数据分析</strong></p>
+                <p>原始数据：</p>
+                <pre>
+日期        地区    产品    销售额    数量
+2024-01-01  北京    A产品   1000     10
+2024-01-01  上海    B产品   1500     15
+2024-01-01  北京    B产品   800      8
+2024-02-01  上海    A产品   1200     12</pre>
+
+                <p>透视表配置示例1（按地区和产品分析销售）：</p>
+                <ul>
+                    <li>行标签：地区</li>
+                    <li>列标签：产品</li>
+                    <li>值1：销售额（求和）</li>
+                    <li>值2：数量（求和）</li>
+                </ul>
+
+                <p>结果1：</p>
+                <pre>
+地区    A产品(销售额)  B产品(销售额)  A产品(数量)  B产品(数量)
+北京    1,000         800           10          8
+上海    1,200         1,500         12          15
+总计    2,200         2,300         22          23</pre>
+
+                <p>透视表配置示例2（按产品统计平均销售额）：</p>
+                <ul>
+                    <li>行标签：产品</li>
+                    <li>值1：销售额（求和）</li>
+                    <li>值2：销售额（平均值）</li>
+                </ul>
+
+                <p>结果2：</p>
+                <pre>
+产品    销售额(sum)  销售额(mean)
+A产品   2,200       1,100.00
+B产品   2,300       1,150.00
+总计    4,500       1,125.00</pre>
+            </div>
+
+            <div class="note">
+                <strong>注意事项</strong>
+                <ul>
+                    <li>数据类型��制：
+                        <ul>
+                            <li>数值类型：支持所有聚合函数</li>
+                            <li>文本类型：只支持计数操作</li>
+                            <li>日期类型：按文本处理</li>
+                        </ul>
+                    </li>
+                    <li>选择要求：
+                        <ul>
+                            <li>行标签：必选，至少一个</li>
+                            <li>列标签：可选，可以不选</li>
+                            <li>值字段：必选，至少一个</li>
+                        </ul>
+                    </li>
+                    <li>性能建议：
+                        <ul>
+                            <li>数据量建议在10万行以内</li>
+                            <li>避免过多的行列标签组合</li>
+                            <li>值字段数量建议不超过5个</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pivot-config {
+        margin-top: 20px;
+    }
+
+    .config-section {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f5f5f7;
+        border-radius: 8px;
+    }
+
+    .value-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        background-color: white;
+        padding: 8px;
+        border-radius: 6px;
+    }
+
+    .value-item select {
+        flex: 1;
+    }
+
+    .aggfunc-select {
+        width: 120px;
+    }
+
+    .column-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        background-color: white;
+        padding: 8px;
+        border-radius: 6px;
+    }
+
+    .column-item select {
+        flex: 1;
+    }
+</style>
+
+<script>
+// 全局变量
+let pivotCurrentColumns = null;
+
+// 文件上传处理
+function handlePivotFileUpload() {
+    resetError('pivotStatus');
+    const file = document.getElementById('pivotFile').files[0];
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('pivotFile', 'true');
+        
+        fetch('/api/get-sheets', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById('pivotSheet');
+                select.innerHTML = '<option value="">请选择工作表</option>' + 
+                    data.sheets.map(sheet => `<option value="${sheet}">${sheet}</option>`).join('');
+                document.getElementById('pivotFileConfig').style.display = 'block';
+            } else {
+                showError(data.error || '获取工作表失败', 'pivotStatus');
+            }
+        })
+        .catch(error => {
+            showError('处理文件时发生错误: ' + error.message, 'pivotStatus');
+        });
+    }
+}
+
+// 工作表变更处理
+function handlePivotSheetChange() {
+    resetError('pivotStatus');
+    const file = document.getElementById('pivotFile').files[0];
+    const sheet = document.getElementById('pivotSheet').value;
+    
+    if (file && sheet) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('sheet', sheet);
+        formData.append('pivotFile', 'true');
+        
+        fetch('/api/get-columns', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                pivotCurrentColumns = data.columns;
+                // 清空现有的选择
+                document.querySelector('#rowLabels .column-list').innerHTML = '';
+                document.querySelector('#colLabels .column-list').innerHTML = '';
+                document.querySelector('#valueFields .column-list').innerHTML = '';
+                // 添加第一个行标签和值字段（必选项）
+                addRowLabel();
+                addValueField();
+            } else {
+                showError(data.error || '获取列信息失败', 'pivotStatus');
+            }
+        })
+        .catch(error => {
+            showError('处理文件时发生错误: ' + error.message, 'pivotStatus');
+        });
+    }
+}
+
+// 添加行标签
+function addRowLabel() {
+    addColumnSelector('#rowLabels .column-list', 'row-label-select', '选择行标签');
+}
+
+// 添加列标签
+function addColLabel() {
+    addColumnSelector('#colLabels .column-list', 'col-label-select', '选择列标签');
+}
+
+// 添加值字段
+function addValueField() {
+    const columnList = document.querySelector('#valueFields .column-list');
+    const valueItem = document.createElement('div');
+    valueItem.className = 'value-item';
+    
+    // 列选择
+    const select = document.createElement('select');
+    select.className = 'value-field-select';
+    select.innerHTML = '<option value="">选择值字段</option>';
+    if (pivotCurrentColumns) {
+        pivotCurrentColumns.columns.forEach((col, index) => {
+            const header = pivotCurrentColumns.headers[index] || '';
+            const displayText = header ? `${col} (${header})` : col;
+            select.innerHTML += `<option value="${col}">${displayText}</option>`;
+        });
+    }
+    
+    // 聚合函数选择
+    const aggSelect = document.createElement('select');
+    aggSelect.className = 'aggfunc-select';
+    aggSelect.innerHTML = `
+        <option value="sum">求和</option>
+        <option value="count">计数</option>
+        <option value="mean">平均值</option>
+        <option value="max">最大值</option>
+        <option value="min">最小值</option>
+    `;
+
+    // 监听列选择变化
+    select.addEventListener('change', function() {
+        const selectedCol = this.value;
+        if (selectedCol) {
+            // 检查选中列的第一个非空值的类型
+            fetch('/api/check-column-type', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    file: document.getElementById('pivotFile').files[0].name,
+                    sheet: document.getElementById('pivotSheet').value,
+                    column: selectedCol
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.type === 'text') {
+                    // 如果是文本类型，只允许计数
+                    aggSelect.value = 'count';
+                    aggSelect.querySelectorAll('option').forEach(option => {
+                        if (option.value !== 'count') {
+                            option.disabled = true;
+                        }
+                    });
+                    showError(`列 '${selectedCol}' 是文本类型，只支持计数操作`, 'pivotStatus');
+                } else {
+                    // 如果是数值类型，允许所有聚合函数
+                    aggSelect.querySelectorAll('option').forEach(option => {
+                        option.disabled = false;
+                    });
+                    resetError('pivotStatus');
+                }
+            });
+        }
+    });
+    
+    // 删除按钮
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-column-btn';
+    removeBtn.textContent = '删除';
+    removeBtn.onclick = function() {
+        if (document.querySelectorAll('.value-item').length > 1) {
+            columnList.removeChild(valueItem);
+        } else {
+            showError('至少需要一个值字段', 'pivotStatus');
+        }
+    };
+    
+    valueItem.appendChild(select);
+    valueItem.appendChild(aggSelect);
+    valueItem.appendChild(removeBtn);
+    columnList.appendChild(valueItem);
+}
+
+// 添加列选择器
+function addColumnSelector(containerSelector, className, placeholder) {
+    const columnList = document.querySelector(containerSelector);
+    const columnItem = document.createElement('div');
+    columnItem.className = 'column-item';
+    
+    const select = document.createElement('select');
+    select.className = className;
+    select.innerHTML = `<option value="">${placeholder}</option>`;
+    if (pivotCurrentColumns) {
+        pivotCurrentColumns.columns.forEach((col, index) => {
+            const header = pivotCurrentColumns.headers[index] || '';
+            const displayText = header ? `${col} (${header})` : col;
+            select.innerHTML += `<option value="${col}">${displayText}</option>`;
+        });
+    }
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-column-btn';
+    removeBtn.textContent = '删除';
+    removeBtn.onclick = function() {
+        if (className === 'row-label-select' && document.querySelectorAll('.row-label-select').length > 1) {
+            columnList.removeChild(columnItem);
+        } else if (className !== 'row-label-select') {
+            columnList.removeChild(columnItem);
+        } else {
+            showError('至少需要一个行标签', 'pivotStatus');
+        }
+    };
+    
+    columnItem.appendChild(select);
+    columnItem.appendChild(removeBtn);
+    columnList.appendChild(columnItem);
+}
+
+// 处理透视表
+function processPivot() {
+    resetError('pivotStatus');
+    
+    // 验证选择
+    if (!validateColumnSelection()) {
+        return;
+    }
+
+    const file = document.getElementById('pivotFile').files[0];
+    const sheet = document.getElementById('pivotSheet').value;
+    
+    // 获取行标签
+    const rowLabels = Array.from(document.querySelectorAll('.row-label-select'))
+        .map(select => select.value)
+        .filter(value => value);
+    
+    // 获取列标签
+    const colLabels = Array.from(document.querySelectorAll('.col-label-select'))
+        .map(select => select.value)
+        .filter(value => value);
+    
+    // 获取值字段配置
+    const valueFields = Array.from(document.querySelectorAll('.value-item'))
+        .map(item => ({
+            column: item.querySelector('.value-field-select').value,
+            aggfunc: item.querySelector('.aggfunc-select').value
+        }))
+        .filter(config => config.column);
+    
+    if (!file || !sheet) {
+        showError('请选择文件和工作表', 'pivotStatus');
+        return;
+    }
+
+    const config = {
+        rows: rowLabels,
+        cols: colLabels,
+        values: valueFields
+    };
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('sheet', sheet);
+    formData.append('config', JSON.stringify(config));
+
+    const status = document.getElementById('pivotStatus');
+    status.textContent = '正在处理...';
+
+    fetch('/api/pivot', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            status.textContent = '处理完成！';
+            document.getElementById('pivotDownloadBtn').disabled = false;
+        } else {
+            showError(data.error || '处理失败', 'pivotStatus');
+        }
+    })
+    .catch(error => {
+        showError('处理文件时发生错误: ' + error.message, 'pivotStatus');
+    });
+}
+
+// 验证列选择
+function validateColumnSelection() {
+    // 获取所有选择的列
+    const rowLabels = Array.from(document.querySelectorAll('.row-label-select'))
+        .map(select => select.value)
+        .filter(value => value);
+    
+    const valueFields = Array.from(document.querySelectorAll('.value-field-select'))
+        .map(select => select.value)
+        .filter(value => value);
+
+    // 只检查必选项
+    if (rowLabels.length === 0) {
+        showError('请至少选择一个行标签', 'pivotStatus');
+        return false;
+    }
+
+    if (valueFields.length === 0) {
+        showError('请至少选择一个值字段', 'pivotStatus');
+        return false;
+    }
+
+    return true;
+}
+
+// 下载结果
+function downloadPivotResult() {
+    window.location.href = '/api/download-result';
+}
+
+// 错误处理
+function showError(message, statusId) {
+    const status = document.getElementById(statusId);
+    status.textContent = message;
+    status.style.color = '#ff3b30';
+}
+
+function resetError(statusId) {
+    const status = document.getElementById(statusId);
+    status.textContent = '等待操作...';
+    status.style.color = '#1d1d1f';
+}
+</script>
